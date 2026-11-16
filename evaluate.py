@@ -861,7 +861,19 @@ def main() -> None:
     if args.benchmark:
         probes = build_evaluation_benchmark(recognizer, students)
         metrics = evaluate_benchmark(probes, students, recognizer)
-        print("Benchmark Results:", metrics)
+        print("\n" + "=" * 70)
+        print(f"BENCHMARK ACCURACY & VERIFICATION METRICS (Threshold: {COSINE_SIMILARITY_THRESHOLD})")
+        print("=" * 70)
+        print(f"  • Accuracy                : {metrics['accuracy']:.1%}")
+        print(f"  • Precision               : {metrics['precision']:.1%}")
+        print(f"  • Recall                  : {metrics['recall']:.1%}")
+        print(f"  • F1-Score                : {metrics['f1']:.4f}")
+        print(f"  • False Accept Rate (FAR) : {metrics['far']:.1%}")
+        print(f"  • False Reject Rate (FRR) : {metrics['frr']:.1%}")
+        print(f"  • Total Probes Tested     : {metrics['total_probes']} ({metrics['total_genuine']} Genuine, {metrics['total_impostor']} Impostors)")
+        print(f"  • Mean Genuine Score      : {metrics['mean_genuine_score']:.4f}")
+        print(f"  • Mean Impostor Score     : {metrics['mean_impostor_score']:.4f}")
+        print("=" * 70)
 
     if args.threshold_sweep:
         probes = build_evaluation_benchmark(recognizer, students)

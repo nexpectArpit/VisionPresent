@@ -101,91 +101,76 @@ VisionPresent/
 ## 4. Installation & Setup
 
 ### Step 1: Clone Repository & Create Virtual Environment
-```powershell
-git clone <repository-url>
+```bash
+git clone https://github.com/nexpectArpit/VisionPresent.git
 cd VisionPresent
 
-# Create and activate virtual environment
-python -m venv .venv
-.venv\Scripts\activate
+# Create virtual environment (Python 3.10 - 3.13)
+python3 -m venv .venv
+
+# Activate on macOS / Linux:
+source .venv/bin/activate
+
+# Or activate on Windows:
+# .venv\Scripts\activate
 ```
 
 ### Step 2: Install Pinned Dependencies
-```powershell
+```bash
 pip install -r requirements.txt
 ```
 
 ### Step 3: Download ONNX Models
 Fetch the official OpenCV Zoo pretrained weights for YuNet and SFace:
-```powershell
+```bash
 python download_models.py
 ```
-*Validates file integrity and ensures model compatibility.*
+*Validates file integrity via OpenCV DNN and ensures model compatibility.*
 
 ---
 
-## 5. Usage Guide
+## 5. How to Run
 
-### 5.1 Enrolling Students
-
-The system enforces strict single-face validation and presents an informed biometric consent disclosure:
-
-```powershell
-# Option A: Seed 9 realistic sample students for instant testing
+### Step 1: Enroll Students (Registered Roster)
+```bash
+# Seed student roster into SQLite:
 python enroll.py --seed-sample-students
 
-# Option B: Enroll from an image folder (5-10 varied photos recommended)
-python enroll.py --folder path/to/photos --roll CS101 --name "Diya Sharma"
-
-# Option C: Interactive webcam enrollment (captures varied poses)
+# Or enroll your own face live via webcam:
 python enroll.py --webcam --roll CS110 --name "Arpit Tripathi"
 
-# View enrolled student roster
+# Verify registered roster:
 python enroll.py --list
 ```
 
-### 5.2 Running an Attendance Session
-
-```powershell
-# 1. Live classroom webcam scan (15-second multi-frame aggregation)
-python run_session.py --webcam --course "CS-101" --duration 15 --min-frames 3
-
-# 2. Process a classroom group snapshot or image
-python run_session.py --image data/test_images/sample_face.jpg --course "CS-101" --no-display
-
-# 3. For distant students in large lecture halls (tiling + upscaling)
-python run_session.py --image classroom_4k.jpg --course "CS-101" --tile-size 640 --upscale 1.5
+### Step 2: Live Face Recognition & Anti-Spoofing Demo
+```bash
+# Real-time camera visualizer (Green box = Match, Red box = Unknown/Spoof):
+python demo_recognition.py --webcam
 ```
 
-**Outputs generated per session:**
-- Transactional records in `data/attendance.db` (enforcing `UNIQUE(session_id, student_id)`).
-- Dated CSV log: `data/exports/attendance_YYYY-MM-DD_<Course>.csv`.
-- Visual proof image: `data/exports/session_<id>_<Course>_proof.jpg`.
+### Step 3: Run Classroom Attendance Scan
+```bash
+# 15-second classroom attendance scan with multi-frame temporal voting:
+python run_session.py --webcam --course CS-101 --duration 15
+```
+*Automatically marks present/absent students in SQLite, exports CSV to `data/exports/`, and saves proof snapshot.*
 
-### 5.3 Viewing Reports & Analytics
-
-```powershell
-# View summary of the latest attendance session
+### Step 4: View Generated Attendance Report
+```bash
+# View summary table for the latest attendance session:
 python report.py --latest
-
-# View complete historical log of all lecture sessions
-python report.py --sessions
-
-# View cumulative attendance percentages per student (highlights <75% attendance)
-python report.py --student-summary
 ```
 
-### 5.4 Running Empirical Evaluation
-
-```powershell
-# Run full evaluation suite (metrics, threshold sweep, condition stress test, latency)
+### Step 5: System Accuracy & Limitations Evaluation
+```bash
+# Run full empirical benchmark (Accuracy, FAR, FRR, stress tests, and latency):
 python evaluate.py
+```
 
-# Run individual evaluation components
-python evaluate.py --benchmark
-python evaluate.py --threshold-sweep
-python evaluate.py --conditions
-python evaluate.py --latency
+### Step 6: Run Automated Test Suite
+```bash
+python -m pytest tests/ -v
 ```
 
 ---
@@ -248,7 +233,7 @@ The empirical sweep across thresholds $\tau \in [0.10, 0.90]$ is plotted below:
 
 Run the complete 24-test unit test suite covering database transactions, single-face validation, recognition thresholds, temporal aggregation, report generation, and evaluation:
 
-```powershell
+```bash
 python -m pytest tests/ -v
 ```
 
